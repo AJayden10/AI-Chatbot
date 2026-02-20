@@ -43,17 +43,17 @@ Modern support teams face overwhelming volumes of repetitive questions, slow res
 ## 🏗️ **Architecture Overview**
 
 ```
-Frontend (React + Tailwind)
+Frontend (React + Vite + Tailwind)
         |
-        | REST API / WebSockets
+        | REST API
         v
-Backend (Node.js / Express or FastAPI)
-        |
-        v
-Database (PostgreSQL / Supabase)
+Backend (FastAPI + Python)
         |
         v
-AI Services (OpenAI GPT / Gemini + Sentiment Model)
+Database (PostgreSQL)
+        |
+        v
+AI Services (OpenAI GPT + VADER Sentiment)
 ```
 
 ---
@@ -62,11 +62,11 @@ AI Services (OpenAI GPT / Gemini + Sentiment Model)
 
 | Layer              | Technology                                  |
 | ------------------ | ------------------------------------------- |
-| Frontend           | React, Tailwind CSS                         |
-| Backend            | Node.js/Express or Python/FastAPI           |
-| Database           | PostgreSQL / Supabase                       |
-| AI/LLM             | OpenAI GPT, Google Gemini                   |
-| Sentiment Analysis | HuggingFace Transformers / VADER            |
+| Frontend           | React 18, Vite, Tailwind CSS, Recharts     |
+| Backend            | FastAPI, Python 3.9+                       |
+| Database           | PostgreSQL (SQLAlchemy ORM)                |
+| AI/LLM             | OpenAI GPT-3.5-turbo                       |
+| Sentiment Analysis | VADER Sentiment Analyzer                   |
 | Hosting            | Vercel (frontend), Railway/Render (backend) |
 
 ---
@@ -93,7 +93,7 @@ npm run dev
 Environment variables (create a `.env` file):
 
 ```
-VITE_API_URL=http://localhost:5000
+VITE_API_URL=http://localhost:8000
 ```
 
 ---
@@ -102,18 +102,22 @@ VITE_API_URL=http://localhost:5000
 
 ```bash
 cd backend
-npm install
-npm run dev
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
+python main.py
 ```
 
 Backend `.env` variables:
 
 ```
-DATABASE_URL="your_postgres_connection_string"
-OPENAI_API_KEY="your_openai_key"
-JWT_SECRET="your_secret_key"
-PORT=5000
+DATABASE_URL=postgresql://user:password@localhost:5432/servicepilot
+OPENAI_API_KEY=your_openai_key
+JWT_SECRET=your_secret_key
+PORT=8000
 ```
+
+**Quick Start**: See `QUICKSTART.md` for detailed setup instructions.
 
 ---
 
@@ -133,11 +137,11 @@ PORT=5000
 ### Example: Send Chat Message
 
 ```http
-POST /api/chat
+POST /api/message
 Content-Type: application/json
 
 {
-  "sessionId": "123",
+  "session_id": null,
   "message": "Where is my order?"
 }
 ```
@@ -147,9 +151,14 @@ Content-Type: application/json
 ```json
 {
   "reply": "Your order #4382 is currently in transit and expected to arrive tomorrow!",
-  "sentiment": "neutral"
+  "session_id": "uuid-here",
+  "sentiment": "neutral",
+  "sentiment_score": 0.0,
+  "escalated": false
 }
 ```
+
+**API Documentation**: Once running, visit `http://localhost:8000/docs` for interactive API documentation.
 
 ---
 
